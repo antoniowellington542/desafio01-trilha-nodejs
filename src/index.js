@@ -42,7 +42,7 @@ app.post('/users', (request, response) => {
   const exist = AlreadyExistUser(name);
 
   if(exist){
-    return response.status(400).json({ error: "User Already Exist!" });
+    return response.status(400).json({ error: 'User Already Exist!' });
   }
 
   const user = {
@@ -99,6 +99,10 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
 
   const updateTodo = listUser.todos.find((todo) => todo.id === id);
 
+  if(!updateTodo) {
+    return response.status(400).json({ error: 'Todo not Found!' });
+  }
+
   updateTodo.title = title;
   updateTodo.deadline = new Date(deadline);
 
@@ -112,6 +116,10 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
   const updateTodo = listUser.todos.find((todo) => todo.id === id);
 
+  if(!updateTodo){
+    return response.status(400).json({ error: 'Todo not Found!' })
+  }
+
   updateTodo.done = true;
 
   return response.status(200).send();
@@ -119,6 +127,20 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const { id } = request.params;
+
+  const { username } = request.headers;
+
+  const updateTodo = users.find((user) => user.username === username);
+
+  if(!updateTodo){
+    return response.status(400).json({ error: 'Todo not Found!' });
+  }
+
+  updateTodo.todos.splice(id, 1);
+
+  return response.status(200).send();
+
 });
 
 module.exports = app;
