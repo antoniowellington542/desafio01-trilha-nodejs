@@ -86,12 +86,23 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
   listUser.todos.push(todo);
 
-
   return response.status(201).json(todo);
 });
 
+
+// Rota para atualizar title e deadline do todo
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const { id }  = request.params;
+  const { title, deadline } = request.body;
+  const { listUser } = request;
+
+  const updateTodo = listUser.todos.find((todo) => todo.id === id);
+
+  updateTodo.title = title;
+  updateTodo.deadline = new Date(deadline);
+
+  return response.json(updateTodo);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
