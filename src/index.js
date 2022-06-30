@@ -102,11 +102,19 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   updateTodo.title = title;
   updateTodo.deadline = new Date(deadline);
 
-  return response.json(updateTodo);
+  return response.status(200).send();
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const { id } = request.params;
+  const { listUser } = request;
+
+  const updateTodo = listUser.todos.find((todo) => todo.id === id);
+
+  updateTodo.done = true;
+
+  return response.status(200).send();
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
