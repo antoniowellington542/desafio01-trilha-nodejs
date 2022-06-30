@@ -13,9 +13,17 @@ const users = [];
 function checksExistsUserAccount(request, response, next) {
   // Complete aqui
 
+  const { username } = request.headers;
+
+  const listUser = users.find((user) => user.username === username);
+
+  if(!listUser){
+    return response.status(400).json({ error: "User Not Found!"});
+  }
+
+  request.listUser = listUser;
 
   return next();
-
 }
 
 // Verifica se Já existe no Banco de dados
@@ -51,13 +59,35 @@ app.post('/users', (request, response) => {
 
 
 
-// Rota para 
+// Rota para pegar Todos
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+
+  const { listUser } = request;
+
+  return response.json(listUser.todos);
+
 });
 
+// Rota para adicionar um novo Todo
 app.post('/todos', checksExistsUserAccount, (request, response) => {
   // Complete aqui
+  const { title, deadline } = request.body;
+
+  const { listUser } = request;
+
+  todo = {
+    id: uuidv4(),
+    title,
+    done: false,
+    deadline: new Date(deadline),
+    created_at: new Date()
+  }
+
+  listUser.todos.push(todo);
+
+
+  return response.status(201).json(todo);
 });
 
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
