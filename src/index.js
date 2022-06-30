@@ -27,9 +27,9 @@ function checksExistsUserAccount(request, response, next) {
 }
 
 // Verifica se Já existe no Banco de dados
-function AlreadyExistUser(name){
+function AlreadyExistUser(username){
   
-  const exist = users.some((u) => u.name === name);
+  const exist = users.some((u) => u.username === username);
 
   return exist;
 }
@@ -39,7 +39,7 @@ app.post('/users', (request, response) => {
   // Complete aqui
   const { name, username } = request.body;
 
-  const exist = AlreadyExistUser(name);
+  const exist = AlreadyExistUser(username);
 
   if(exist){
     return response.status(400).json({ error: 'User Already Exist!' });
@@ -54,7 +54,7 @@ app.post('/users', (request, response) => {
 
   users.push(user);
   
-  return response.status(201).json(user); 
+  return response.status(200).json(user); 
 });
 
 
@@ -100,13 +100,13 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   const updateTodo = listUser.todos.find((todo) => todo.id === id);
 
   if(!updateTodo) {
-    return response.status(400).json({ error: 'Todo not Found!' });
+    return response.status(404).json({ error: 'Todo not Found!' });
   }
 
   updateTodo.title = title;
   updateTodo.deadline = new Date(deadline);
 
-  return response.status(200).send();
+  return response.status(200).json(updateTodo);
 });
 
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
@@ -117,12 +117,12 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   const updateTodo = listUser.todos.find((todo) => todo.id === id);
 
   if(!updateTodo){
-    return response.status(400).json({ error: 'Todo not Found!' })
+    return response.status(404).json({ error: 'Todo not Found!' })
   }
 
   updateTodo.done = true;
 
-  return response.status(200).send();
+  return response.status(200).json(updateTodo);
 });
 
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
@@ -134,12 +134,12 @@ app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
   const updateTodo = users.find((user) => user.username === username);
 
   if(!updateTodo){
-    return response.status(400).json({ error: 'Todo not Found!' });
+    return response.status(404).json({ error: 'Todo not Found!' });
   }
 
   updateTodo.todos.splice(id, 1);
 
-  return response.status(200).send();
+  return response.status(204).send();
 
 });
 
