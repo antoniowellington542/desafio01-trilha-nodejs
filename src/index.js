@@ -12,12 +12,16 @@ const users = [];
 
 function checksExistsUserAccount(request, response, next) {
   // Complete aqui
+
+
+  return next();
+
 }
 
 // Verifica se Já existe no Banco de dados
 function AlreadyExistUser(name){
   
-  const exist = users.some((user) => user.name === name);
+  const exist = users.some((u) => u.name === name);
 
   return exist;
 }
@@ -25,28 +29,29 @@ function AlreadyExistUser(name){
 // Rota para criar um novo usuario
 app.post('/users', (request, response) => {
   // Complete aqui
-  const { name, username} = request.body;
+  const { name, username } = request.body;
 
   const exist = AlreadyExistUser(name);
 
-  if(!exist){
+  if(exist){
     return response.status(400).json({ error: "User Already Exist!" });
   }
 
-  const id = uuidv4();
-  
-  users.push({
-    id,
+  const user = {
+    id: uuidv4(),
     name,
     username,
     todos: []
-  });
+  };
+
+  users.push(user);
   
-  return response.status(201).send() 
+  return response.status(201).json(user); 
 });
 
 
 
+// Rota para 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   // Complete aqui
 });
