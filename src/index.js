@@ -92,13 +92,11 @@ app.post('/todos', checksExistsUserAccount, (request, response) => {
 
 // Rota para atualizar title e deadline do todo
 app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
   const { id }  = request.params;
   const { title, deadline } = request.body;
   const { listUser } = request;
 
-  const updateTodo = listUser.todos.find((todo) => todo.id === id);
-
+  const updateTodo = checkTodo(listUser, id);
   if(!updateTodo) {
     return response.status(404).json({ error: 'Todo not Found!' });
   }
@@ -109,12 +107,12 @@ app.put('/todos/:id', checksExistsUserAccount, (request, response) => {
   return response.status(200).json(updateTodo);
 });
 
+// Rota para mudar o status de done para true
 app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
   const { id } = request.params;
   const { listUser } = request;
 
-  const updateTodo = listUser.todos.find((todo) => todo.id === id);
+  const updateTodo = checkTodo(listUser, id);
 
   if(!updateTodo){
     return response.status(404).json({ error: 'Todo not Found!' })
@@ -125,22 +123,28 @@ app.patch('/todos/:id/done', checksExistsUserAccount, (request, response) => {
   return response.status(200).json(updateTodo);
 });
 
+// Rota para deletar tarefa do usuario por id
 app.delete('/todos/:id', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
   const { id } = request.params;
+  const { listUser } = request;
 
-  const { username } = request.headers;
-
-  const updateTodo = users.find((user) => user.username === username);
+  const updateTodo = checkTodo(listUser, id);
 
   if(!updateTodo){
     return response.status(404).json({ error: 'Todo not Found!' });
   }
 
-  updateTodo.todos.splice(id, 1);
+  listUser.todos.splice(updateTodo, 1);
 
   return response.status(204).send();
 
 });
+
+function checkTodo(listUser, id) {
+  
+  const resultFind = listUser.todos.find((todo) => todo.id === id)
+  
+  return resultFind;
+}
 
 module.exports = app;
